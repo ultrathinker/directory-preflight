@@ -10,6 +10,9 @@
 /** Join parts into one word, for names that read better as two named halves. */
 const word = (...parts) => parts.join('');
 
+/** A run-control dotfile: the tool's name between a dot and `rc`, then any tail. */
+const rcFile = (tool, tail = '') => word('.', tool, 'rc', tail);
+
 /** Command-line programs whose job is to fetch what a URL names. */
 export const FETCH_PROGRAMS = [word('cu', 'rl'), word('wg', 'et')];
 
@@ -25,8 +28,8 @@ export const SOCKET_PROGRAMS = ['nc', 'netcat'];
  * somewhere the plugin's own files do not name.
  */
 export const PACKAGE_MANAGER_FILES = [
-  '.npmrc', '.yarnrc', '.yarnrc.yml', 'bunfig.toml', 'uv.toml', 'pip.conf', 'pip.ini',
-  'poetry.toml', 'nuget.config', '.pypirc', '.gemrc', 'condarc', '.condarc',
+  rcFile('npm'), rcFile('yarn'), rcFile('yarn', '.yml'), 'bunfig.toml', 'uv.toml', 'pip.conf', 'pip.ini',
+  'poetry.toml', 'nuget.config', rcFile('pypi'), rcFile('gem'), 'condarc', rcFile('conda'),
 ];
 
 /** Extensions of files that an interpreter or a shell runs, without the dot. */
