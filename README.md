@@ -116,7 +116,7 @@ the exit code unless you pass `--strict`, so a plausible false positive cannot b
 The checker reads files and prints a report. It never writes, moves, renames or deletes anything, it runs every
 Git command with `--no-optional-locks` so it does not even refresh your index, and it makes no network requests.
 Nothing it reads leaves your machine, and it never looks at Claude's memory, chat history or session
-transcripts.
+transcripts. Privacy: `PRIVACY.md`. Security reports: `SECURITY.md`.
 
 ## Updating the rules
 

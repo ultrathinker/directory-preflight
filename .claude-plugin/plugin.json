@@ -9,6 +9,9 @@
   "license": "MIT",
   "repository": "https://github.com/ultrathinker/directory-preflight",
   "homepage": "https://github.com/ultrathinker/directory-preflight",
+  "documentationUrl": "https://github.com/ultrathinker/directory-preflight#readme",
+  "supportUrl": "https://github.com/ultrathinker/directory-preflight/issues",
+  "privacyPolicyUrl": "https://github.com/ultrathinker/directory-preflight/blob/main/PRIVACY.md",
   "keywords": [
     "plugin-directory",
     "validation",
