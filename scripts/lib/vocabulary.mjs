@@ -19,6 +19,16 @@ export const FETCH_CMDLETS = [word('Invoke-', 'WebRequest'), word('Invoke-', 'Re
 /** Programs that open a raw network connection. */
 export const SOCKET_PROGRAMS = ['nc', 'netcat'];
 
+/**
+ * Package-manager configuration files. Each can set a registry, an index or a proxy, so a
+ * plugin that runs a launcher or an install and ships one can send a package request
+ * somewhere the plugin's own files do not name.
+ */
+export const PACKAGE_MANAGER_FILES = [
+  '.npmrc', '.yarnrc', '.yarnrc.yml', 'bunfig.toml', 'uv.toml', 'pip.conf', 'pip.ini',
+  'poetry.toml', 'nuget.config', '.pypirc', '.gemrc', 'condarc', '.condarc',
+];
+
 /** Extensions of files that an interpreter or a shell runs, without the dot. */
 export const SCRIPT_EXTENSIONS = [
   'sh', 'bash', 'zsh', 'ps1', 'cmd', 'bat', 'js', 'mjs', 'cjs', 'ts', 'mts', 'cts', 'py', 'rb', 'pl', 'php',

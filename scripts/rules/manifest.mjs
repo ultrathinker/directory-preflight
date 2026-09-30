@@ -5,7 +5,7 @@
  */
 
 import path from 'node:path';
-import { defineRule } from '../lib/registry.mjs';
+import { defineRule, EXAMPLE_URL } from '../lib/registry.mjs';
 import { hasNonAscii, nameHazards, oneLine } from '../lib/util.mjs';
 
 const MANIFEST_REL = '.claude-plugin/plugin.json';
@@ -235,7 +235,7 @@ export const manifestRules = [
     source: 'manifest-reference',
     result: 'block',
     what: 'The homepage field does not parse as a URL, and a plugin whose homepage does not parse fails to load.',
-    fix: 'Write an absolute URL, such as https://example.com/docs.',
+    fix: `Write an absolute URL, such as ${EXAMPLE_URL}.`,
     limit: 1,
     run(scan) {
       const { data, error } = readManifest(scan);

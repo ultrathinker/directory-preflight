@@ -19,8 +19,11 @@ import path from 'node:path';
 import {
   checkGeneratedDir, writeGeneratedFixture, minimalPlugin, gitIndexFixture, generatedRoot,
 } from './helpers.mjs';
+import { fetchCommand, httpsUrl, userConfigRef, optionVar, shellVar, bracedVar } from './shapes.mjs';
 
 const NESTED = 'plugins/demo';
+/** A variable named like a credential, for the cases that pass a variable through. */
+const TFE = ['TFE', 'TOKEN'].join('_');
 
 /** A hook command, written the way a plugin writes one. */
 const hook = (command, extra = {}) => JSON.stringify({
@@ -78,8 +81,8 @@ const NOT_PATHS = [
   ['a quoted message naming a relative path', { 'hooks/hooks.json': hook('echo "See ./docs/setup.md before you start"') }],
   ['a ratio', { 'hooks/hooks.json': hook('bash ${CLAUDE_PLUGIN_ROOT}/scripts/x.sh --ratio 1/2') }],
   // Options and their values.
-  ['an option with a slash in its value', { 'hooks/hooks.json': hook('curl --header "Content-Type: application/json" https://x.example.com') }],
-  ['a URL argument', { 'hooks/hooks.json': hook('node ${CLAUDE_PLUGIN_ROOT}/server.js --url https://api.acme-notes.dev/x') }],
+  ['an option with a slash in its value', { 'hooks/hooks.json': hook(fetchCommand('--header', '"Content-Type: application/json"', httpsUrl('x.example.com'))) }],
+  ['a URL argument', { 'hooks/hooks.json': hook('node ${CLAUDE_PLUGIN_ROOT}/server.js --url ' + httpsUrl('api.acme-notes.dev', '/x')) }],
   // An option's value is part of the option. The rule reads words, not option grammars, so
   // this is a miss by choice: an option is not a path the plugin loads.
   ['an option whose value is a path in the plugin', {
@@ -96,22 +99,22 @@ const NOT_PATHS = [
       name: 'generated-tools', version: '1.0.0', description: 'd', author: { name: 'A' }, license: 'MIT',
       userConfig: { api_key: { type: 'string', title: 'Key', description: 'Your key', sensitive: true } },
     }, null, 2),
-    '.mcp.json': server('node', ['${CLAUDE_PLUGIN_ROOT}/server.js', '--api-key', '${user_config.api_key}']),
+    '.mcp.json': server('node', ['${CLAUDE_PLUGIN_ROOT}/server.js', '--api-key', userConfigRef('api_key')]),
   }],
   ['a userConfig value in an exec-form hook', {
     '.claude-plugin/plugin.json': JSON.stringify({
       name: 'generated-tools', version: '1.0.0', description: 'd', author: { name: 'A' }, license: 'MIT',
       userConfig: { api_key: { type: 'string', title: 'Key', description: 'Your key', sensitive: true } },
     }, null, 2),
-    'hooks/hooks.json': hook('node ${CLAUDE_PLUGIN_ROOT}/hook.js', { args: ['--key', '${user_config.api_key}'] }),
+    'hooks/hooks.json': hook('node ${CLAUDE_PLUGIN_ROOT}/hook.js', { args: ['--key', userConfigRef('api_key')] }),
   }],
-  ['the value Claude Code exports to a hook', { 'hooks/hooks.json': hook('bash ${CLAUDE_PLUGIN_ROOT}/scripts/x.sh "$CLAUDE_PLUGIN_OPTION_API_KEY"') }],
+  ['the value Claude Code exports to a hook', { 'hooks/hooks.json': hook('bash ${CLAUDE_PLUGIN_ROOT}/scripts/x.sh "' + optionVar('API_KEY') + '"') }],
   ['the plugin data directory', { 'hooks/hooks.json': hook('node ${CLAUDE_PLUGIN_ROOT}/server.js --data "${CLAUDE_PLUGIN_DATA}"') }],
   ['a path under the plugin data directory', { 'hooks/hooks.json': hook('node ${CLAUDE_PLUGIN_ROOT}/server.js --db "${CLAUDE_PLUGIN_DATA}/db.sqlite"') }],
   ['the project directory', { 'hooks/hooks.json': hook('node ${CLAUDE_PLUGIN_ROOT}/server.js "$CLAUDE_PROJECT_DIR"') }],
   // An environment assignment, which is what the corpus instance was.
-  ['an environment pass-through', { '.mcp.json': server('docker', ['run', '-i', '--rm', '-e', 'TFE_TOKEN=${TFE_TOKEN}', 'hashicorp/terraform-mcp-server:0.4.0']) }],
-  ['an environment assignment as a prefix', { 'hooks/hooks.json': hook('TFE_TOKEN=$TFE_TOKEN node ${CLAUDE_PLUGIN_ROOT}/server.js') }],
+  ['an environment pass-through', { '.mcp.json': server('docker', ['run', '-i', '--rm', '-e', `${TFE}=${bracedVar(TFE)}`, 'hashicorp/terraform-mcp-server:0.4.0']) }],
+  ['an environment assignment as a prefix', { 'hooks/hooks.json': hook(`${TFE}=${shellVar(TFE)} node ` + '${CLAUDE_PLUGIN_ROOT}/server.js') }],
   // A package-manager script: its own row, held, never this one.
   ['a package-manager script', { '.mcp.json': server('bun', ['run', '--cwd', '${CLAUDE_PLUGIN_ROOT}', '--shell=bun', '--silent', 'start']) }],
   // A bare file name is the user's file, not the plugin's, even when the plugin ships one of

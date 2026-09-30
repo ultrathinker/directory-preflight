@@ -4,7 +4,7 @@
  */
 
 import path from 'node:path';
-import { defineRule } from '../lib/registry.mjs';
+import { defineRule, checklistLink } from '../lib/registry.mjs';
 // One definition of "a file Claude Code loads as a component", shared with the front
 // matter rules, so a skill's reference material is never treated as a component.
 import { isComponentFile } from './components.mjs';
@@ -13,12 +13,8 @@ import { collectHookSources, iterateHandlers } from '../lib/hooks.mjs';
 import { findLaunchers, findInstalls } from '../lib/launchers.mjs';
 import { findCredentials, ENV_CREDENTIAL_RE, findEnvCredential, redact } from '../lib/secrets.mjs';
 import { markdownCodeSpans, oneLine } from '../lib/util.mjs';
-import { FETCH_PROGRAMS, FETCH_CMDLETS, SCRIPT_EXTENSIONS } from '../lib/vocabulary.mjs';
+import { FETCH_PROGRAMS, FETCH_CMDLETS, SCRIPT_EXTENSIONS, PACKAGE_MANAGER_FILES } from '../lib/vocabulary.mjs';
 
-const PACKAGE_MANAGER_FILES = [
-  '.npmrc', '.yarnrc', '.yarnrc.yml', 'bunfig.toml', 'uv.toml', 'pip.conf', 'pip.ini',
-  'poetry.toml', 'nuget.config', '.pypirc', '.gemrc', 'condarc', '.condarc',
-];
 const PACKAGE_SOURCE_RE = /\b(registry|index-url|index_url|extra-index-url|proxy|mirror|source|sources|channel)\b/i;
 /**
  * The lockfiles Claude Code installs from. Exactly the list the checklist gives: a yarn.lock
@@ -805,7 +801,7 @@ export const runtimeRules = [
     id: 'runtime/credential-looks-real',
     section: 'runtime',
     source: 'tool',
-    doc: 'https://claude.com/docs/plugins/pre-submission-checklist#prepare-for-the-security-scan',
+    doc: checklistLink('security'),
     result: 'block',
     heuristic: true,
     what: 'A file assigns a long literal value to something named like a secret.',
@@ -924,7 +920,7 @@ export const runtimeRules = [
     id: 'runtime/script-follow',
     section: 'runtime',
     source: 'tool',
-    doc: 'https://claude.com/docs/plugins/pre-submission-checklist#review-what-the-plugin-runs-and-connects-to',
+    doc: checklistLink('runtime'),
     result: 'hold',
     title: 'Scripts the validator couldn’t follow',
     heuristic: true,

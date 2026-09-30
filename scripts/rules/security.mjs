@@ -7,12 +7,14 @@
  * permission settings, and code no reader can follow. A clean result here is not a pass.
  */
 
-import { defineRule } from '../lib/registry.mjs';
+import { defineRule, checklistLink } from '../lib/registry.mjs';
 import { readManifest, declaredServers } from './manifest.mjs';
 import { markdownCodeSpans, oneLine, INVISIBLE_RANGES } from '../lib/util.mjs';
 import { FETCH_PROGRAMS, FETCH_CMDLETS, SOCKET_PROGRAMS } from '../lib/vocabulary.mjs';
 
-const RUNNABLE_EXTENSIONS = ['.sh', '.bash', '.zsh', '.ps1', '.cmd', '.bat', '.js', '.mjs', '.cjs', '.py', '.rb', '.ts'];
+/** The checklist heading these rules belong under. */
+const SCAN_DOC = checklistLink('security');
+const RUNNABLE_EXTENSIONS =['.sh', '.bash', '.zsh', '.ps1', '.cmd', '.bat', '.js', '.mjs', '.cjs', '.py', '.rb', '.ts'];
 const CONFIG_FILES = ['.mcp.json', 'hooks/hooks.json', '.lsp.json', 'settings.json'];
 /** Hosts that cannot be a real destination. */
 const DOC_HOSTS = new Set([
@@ -91,7 +93,7 @@ export const securityRules = [
     id: 'security/undisclosed-destination',
     section: 'security',
     source: 'tool',
-    doc: 'https://claude.com/docs/plugins/pre-submission-checklist#prepare-for-the-security-scan',
+    doc: SCAN_DOC,
     result: 'block',
     heuristic: true,
     what: 'Something in the plugin sends data to a host that neither the README nor the manifest mentions.',
@@ -137,7 +139,7 @@ export const securityRules = [
     id: 'security/hidden-characters',
     section: 'security',
     source: 'tool',
-    doc: 'https://claude.com/docs/plugins/pre-submission-checklist#prepare-for-the-security-scan',
+    doc: SCAN_DOC,
     result: 'block',
     heuristic: true,
     what: 'A file holds invisible or direction-changing characters, which can hide instructions from a reader.',
@@ -164,7 +166,7 @@ export const securityRules = [
     id: 'security/encoded-blob',
     section: 'security',
     source: 'tool',
-    doc: 'https://claude.com/docs/plugins/pre-submission-checklist#prepare-for-the-security-scan',
+    doc: SCAN_DOC,
     result: 'block',
     heuristic: true,
     what: 'A file holds a long encoded block that decodes to readable text.',
@@ -187,7 +189,7 @@ export const securityRules = [
     id: 'security/hidden-instruction-comment',
     section: 'security',
     source: 'tool',
-    doc: 'https://claude.com/docs/plugins/pre-submission-checklist#prepare-for-the-security-scan',
+    doc: SCAN_DOC,
     result: 'block',
     heuristic: true,
     what: 'An HTML comment inside a skill, command or agent file carries instruction-shaped text.',
@@ -211,7 +213,7 @@ export const securityRules = [
     id: 'security/permission-change',
     section: 'security',
     source: 'tool',
-    doc: 'https://claude.com/docs/plugins/pre-submission-checklist#prepare-for-the-security-scan',
+    doc: SCAN_DOC,
     result: 'block',
     heuristic: true,
     what: 'Something in the plugin changes Claude Code permission settings or turns permission checks off.',
@@ -244,7 +246,7 @@ export const securityRules = [
     id: 'security/unreadable-code',
     section: 'security',
     source: 'tool',
-    doc: 'https://claude.com/docs/plugins/pre-submission-checklist#prepare-for-the-security-scan',
+    doc: SCAN_DOC,
     result: 'block',
     heuristic: true,
     what: 'A file holds code no reader can follow: one very long line, or a generated bundle.',

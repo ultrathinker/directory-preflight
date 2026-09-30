@@ -92,6 +92,14 @@ export const SECTIONS = {
   security: 'Security scan readiness',
 };
 
+/** The checklist's link for a section: its page, at the heading that section starts under. */
+export function checklistLink(section) {
+  return `${RULESET.source}${RULESET.anchor[section] ?? ''}`;
+}
+
+/** An example address for the fix text of a rule that asks for an absolute URL. */
+export const EXAMPLE_URL = 'https://example.com/docs';
+
 /**
  * Normalize one rule declaration. `run` receives the scan context and returns an array of
  * `{ path?, detail, fix?, }` objects; the harness fills in everything else.
@@ -109,7 +117,7 @@ export function defineRule(rule) {
     fix: null,
     source,
     doc: rule.doc ?? (source === 'checklist'
-      ? `${RULESET.source}${RULESET.anchor[rule.section] ?? ''}`
+      ? checklistLink(rule.section)
       : SOURCES[source].url ?? null),
     heuristic: false,
     limit: 20,
