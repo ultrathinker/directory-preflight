@@ -10,6 +10,7 @@
 import { defineRule } from '../lib/registry.mjs';
 import { readManifest, declaredServers } from './manifest.mjs';
 import { markdownCodeSpans, oneLine, INVISIBLE_RANGES } from '../lib/util.mjs';
+import { FETCH_PROGRAMS, FETCH_CMDLETS, SOCKET_PROGRAMS } from '../lib/vocabulary.mjs';
 
 const RUNNABLE_EXTENSIONS = ['.sh', '.bash', '.zsh', '.ps1', '.cmd', '.bat', '.js', '.mjs', '.cjs', '.py', '.rb', '.ts'];
 const CONFIG_FILES = ['.mcp.json', 'hooks/hooks.json', '.lsp.json', 'settings.json'];
@@ -19,7 +20,17 @@ const DOC_HOSTS = new Set([
   'www.w3.org', 'w3.org', 'json-schema.org', 'schema.org', 'spdx.org', 'opensource.org',
   'creativecommons.org', 'gnu.org', 'docs.python.org', 'nodejs.org', 'developer.mozilla.org',
 ]);
-const NETWORK_CALL_RE = /\b(?:fetch|axios|got|request|urlopen|urlretrieve|https?\.get|https?\.request|net\.connect|Invoke-WebRequest|Invoke-RestMethod|curl|wget|nc|netcat)\b[^\n;|&]*/g;
+/**
+ * A call that sends or receives over the network, together with the rest of its line.
+ * The pattern matches one of three kinds of name, in this order: a library call, a cmdlet
+ * that fetches what a URL names, or a program that fetches one or opens a raw connection.
+ * It then takes everything up to the next `;`, `|` or `&`, which is where the URL sits.
+ */
+const LIBRARY_CALLS = ['fetch', 'axios', 'got', 'request', 'urlopen', 'urlretrieve', 'https?\\.get', 'https?\\.request', 'net\\.connect'];
+const NETWORK_CALL_RE = new RegExp(
+  `\\b(?:${[...LIBRARY_CALLS, ...FETCH_CMDLETS, ...FETCH_PROGRAMS, ...SOCKET_PROGRAMS].join('|')})\\b[^\\n;|&]*`,
+  'g',
+);
 const URL_RE = /\b(?:https?|wss?):\/\/[^\s"'`()<>\[\]{}|]+/gi;
 
 /** Text that can run: whole files for code, only code spans inside Markdown. */

@@ -13,6 +13,7 @@ import { collectHookSources, iterateHandlers } from '../lib/hooks.mjs';
 import { findLaunchers, findInstalls } from '../lib/launchers.mjs';
 import { findCredentials, ENV_CREDENTIAL_RE, findEnvCredential, redact } from '../lib/secrets.mjs';
 import { markdownCodeSpans, oneLine } from '../lib/util.mjs';
+import { FETCH_PROGRAMS, FETCH_CMDLETS, SCRIPT_EXTENSIONS } from '../lib/vocabulary.mjs';
 
 const PACKAGE_MANAGER_FILES = [
   '.npmrc', '.yarnrc', '.yarnrc.yml', 'bunfig.toml', 'uv.toml', 'pip.conf', 'pip.ini',
@@ -26,8 +27,17 @@ const PACKAGE_SOURCE_RE = /\b(registry|index-url|index_url|extra-index-url|proxy
 const LOCKFILES = ['package-lock.json', 'npm-shrinkwrap.json', 'bun.lock', 'bun.lockb'];
 
 /** Directories whose files can run something. */
-/** A command that reaches the network: the same line has to both read a value and use it. */
-const NETWORK_USE_RE = /\b(?:https?:\/\/|curl|wget|Invoke-WebRequest|Invoke-RestMethod|fetch\s*\(|requests\.|axios|urlopen|net\.connect)\b/i;
+/**
+ * A line that reaches the network: the same line has to both read a value and use it.
+ * The pattern matches one of three kinds of word, in this order: a URL scheme, a program or
+ * cmdlet that fetches what a URL names, or a library call that opens a connection.
+ */
+const URL_SCHEME = 'https?:\\/\\/';
+const LIBRARY_CALLS = ['fetch\\s*\\(', 'requests\\.', 'axios', 'urlopen', 'net\\.connect'];
+const NETWORK_USE_RE = new RegExp(
+  `\\b(?:${[URL_SCHEME, ...FETCH_PROGRAMS, ...FETCH_CMDLETS, ...LIBRARY_CALLS].join('|')})\\b`,
+  'i',
+);
 
 const RUNNABLE_PREFIXES = ['commands/', 'skills/', 'agents/', 'hooks/', 'scripts/', 'bin/', 'monitors/', 'workflows/'];
 const RUNNABLE_EXTENSIONS = ['.sh', '.bash', '.zsh', '.ps1', '.cmd', '.bat', '.js', '.mjs', '.cjs', '.py', '.rb'];
@@ -231,7 +241,7 @@ const DOCUMENTED_ROOT_RE = new RegExp(
   `^\\$(?:\\{)?(?:${DOCUMENTED_VARIABLES.join('|')}|user_config\\.[A-Za-z0-9_]+|CLAUDE_PLUGIN_OPTION_[A-Za-z0-9_]+)\\}(?=/|$)`,
 );
 /** A word written like a script file: what an interpreter is pointed at. */
-const SCRIPT_FILE_RE = /\.(?:sh|bash|zsh|ps1|cmd|bat|js|mjs|cjs|ts|mts|cts|py|rb|pl|php)$/i;
+const SCRIPT_FILE_RE = new RegExp(`\\.(?:${SCRIPT_EXTENSIONS.join('|')})$`, 'i');
 /** An assignment in front of the program: `FOO=1 python3 -c …`. */
 const ASSIGNMENT_RE = /^[A-Za-z_][A-Za-z0-9_]*=/;
 
