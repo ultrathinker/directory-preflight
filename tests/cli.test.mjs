@@ -139,3 +139,41 @@ function checkFixtureText(name) {
   const dir = fixtureDir(name);
   return runChecker([dir, '--repo', dir, '--worktree']);
 }
+// ------------------------------------------------------------------------- thresholds
+
+function writeThreeDataFiles(name) {
+  writeGeneratedFixture(name, {
+    ...minimalPlugin(),
+    'data/a.txt': 'a',
+    'data/b.txt': 'b',
+    'data/c.txt': 'c',
+  });
+}
+
+test('--limit overrides one threshold for that run only', () => {
+  writeThreeDataFiles('limit-flag');
+  assert.equal(findingsFor(checkGenerated('limit-flag').json, 'files/too-many').length, 0);
+
+  const { json } = checkGenerated('limit-flag', ['--limit', 'maxPluginFiles=3']);
+  assert.equal(findingsFor(json, 'files/too-many').length, 1);
+
+  const twice = checkGenerated('limit-flag', ['--limit', 'maxPluginFiles=3', '--limit', 'maxFindingsPerRule=1']);
+  assert.equal(findingsFor(twice.json, 'files/too-many').length, 1);
+});
+
+test('--limit refuses a name it does not know, a missing number and a negative one', () => {
+  for (const value of ['nonsense=3', 'maxPluginFiles', 'maxPluginFiles=', 'maxPluginFiles=many', 'maxPluginFiles=-1']) {
+    const { status, stderr } = runChecker(['--limit', value]);
+    assert.equal(status, 2, value);
+    assert.match(stderr, /--limit needs name=number/, value);
+  }
+  const { status, stderr } = runChecker(['--limit']);
+  assert.equal(status, 2);
+  assert.match(stderr, /needs a value/);
+});
+
+test('the limits come from the command line, not from the environment', () => {
+  writeThreeDataFiles('limit-environment');
+  const { json } = checkGenerated('limit-environment', [], { env: { PREFLIGHT_LIMITS: '{"maxPluginFiles":3}' } });
+  assert.equal(findingsFor(json, 'files/too-many').length, 0);
+});

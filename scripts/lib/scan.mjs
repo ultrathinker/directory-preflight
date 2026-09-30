@@ -18,7 +18,7 @@ import { toPosix } from './util.mjs';
 export const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg']);
 export const FONT_EXTENSIONS = new Set(['.ttf', '.otf', '.woff', '.woff2', '.eot']);
 
-/** Thresholds straight from the checklist. Tests override them through PREFLIGHT_LIMITS. */
+/** Thresholds straight from the checklist. A run can override any of them with --limit name=value. */
 export const DEFAULT_LIMITS = {
   /** Held: a file that is not an image or a font at or above this size. */
   maxFileSizeBytes: 256 * 1024,
@@ -42,20 +42,9 @@ export const DEFAULT_LIMITS = {
   maxWalkEntries: 20000,
 };
 
-const ENV_LIMITS = 'PREFLIGHT_LIMITS';
-
-/** The limits for this run: the defaults, overridden by PREFLIGHT_LIMITS when it is set. */
+/** The limits for this run: the defaults, overridden by the `overrides` the caller passes. */
 export function resolveLimits(overrides = {}) {
-  const fromEnv = process.env[ENV_LIMITS];
-  let envLimits = {};
-  if (fromEnv) {
-    try {
-      envLimits = JSON.parse(fromEnv);
-    } catch {
-      throw new Error(`${ENV_LIMITS} is set but is not valid JSON`);
-    }
-  }
-  return { ...DEFAULT_LIMITS, ...envLimits, ...overrides };
+  return { ...DEFAULT_LIMITS, ...overrides };
 }
 
 /** The nearest directory at or above `start` that holds a `.git` entry, or null. */

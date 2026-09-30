@@ -107,7 +107,7 @@ test('a file over 256 KiB is held, and over the hard limit it stops validation',
   assert.equal(hits.length, 1, JSON.stringify(held.json.findings, null, 2));
   assert.equal(hits[0].result, 'hold');
 
-  const stopped = checkGenerated('oversized', [], { env: { PREFLIGHT_LIMITS: '{"maxFileSizeHardBytes":1024}' } });
+  const stopped = checkGenerated('oversized', ['--limit', 'maxFileSizeHardBytes=1024']);
   assert.equal(findingsFor(stopped.json, 'layout/plugin-entry-too-large').length, 1);
 });
 
@@ -118,7 +118,7 @@ test('the file count limit is enforced', () => {
     'data/b.txt': 'b',
     'data/c.txt': 'c',
   });
-  const { json } = checkGenerated('many-files', [], { env: { PREFLIGHT_LIMITS: '{"maxPluginFiles":3}' } });
+  const { json } = checkGenerated('many-files', ['--limit', 'maxPluginFiles=3']);
   const hits = findingsFor(json, 'files/too-many');
   assert.equal(hits.length, 1);
   assert.equal(hits[0].result, 'hold');

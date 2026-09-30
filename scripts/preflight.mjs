@@ -10,7 +10,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { createScan, resolveLimits, findGitRoot } from './lib/scan.mjs';
+import { createScan, resolveLimits, findGitRoot, DEFAULT_LIMITS } from './lib/scan.mjs';
 import { RULES, JUDGMENT_ITEMS } from './rules/index.mjs';
 import { runRules, sortFindings, summarize, exitCodeFor } from './lib/run.mjs';
 import { renderText, renderMarkdown, renderJson } from './lib/report.mjs';
@@ -35,6 +35,8 @@ Options
   --quiet              Print only the findings that decide the exit code.
   --strict             Let heuristic findings decide the exit code too.
   --max-findings <n>   Cap how many findings each rule prints (default 20).
+  --limit <name=n>     Override one threshold from DEFAULT_LIMITS in scripts/lib/scan.mjs,
+                       for example maxPluginFiles=3. Repeat it for more than one.
   --no-judgment        Leave out the list of decisions this checker cannot make.
   -h, --help           Show this text.
   -V, --version        Show the version.
@@ -56,6 +58,7 @@ function parseArgs(argv) {
     strict: false,
     worktree: false,
     maxFindings: null,
+    limits: {},
     judgment: true,
   };
   const rest = [];
@@ -79,6 +82,18 @@ function parseArgs(argv) {
         const value = Number(readValue('--max-findings'));
         if (!Number.isInteger(value) || value < 1) throw new Error('--max-findings needs a whole number of at least 1');
         options.maxFindings = value;
+        break;
+      }
+      case '--limit': {
+        const pair = readValue('--limit');
+        const equals = pair.indexOf('=');
+        const name = equals === -1 ? pair : pair.slice(0, equals);
+        const text = equals === -1 ? '' : pair.slice(equals + 1).trim();
+        const value = text === '' ? NaN : Number(text);
+        if (!Object.hasOwn(DEFAULT_LIMITS, name) || !Number.isFinite(value) || value < 0) {
+          throw new Error(`--limit needs name=number with a name from: ${Object.keys(DEFAULT_LIMITS).join(', ')}`);
+        }
+        options.limits[name] = value;
         break;
       }
       case '-h': case '--help': options.help = true; break;
@@ -154,7 +169,7 @@ function main(argv) {
     return 2;
   }
 
-  const overrides = {};
+  const overrides = { ...options.limits };
   if (options.maxFindings !== null) overrides.maxFindingsPerRule = options.maxFindings;
   let scan;
   try {

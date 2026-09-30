@@ -92,6 +92,7 @@ so a clean run is never mistaken for an approval.
 | `--strict` | Let heuristic findings decide the exit code. |
 | `--quiet` | Print only the findings that block a submission. |
 | `--max-findings <n>` | Cap how many findings one rule prints. Default 20. |
+| `--limit <name=n>` | Override one threshold, such as `maxPluginFiles=3`; the names are the keys of `DEFAULT_LIMITS` in `scripts/lib/scan.mjs`. |
 | `--repo <path>` | Treat this folder as the repository root instead of finding it. |
 | `--no-judgment` | Leave out the list of decisions the checker cannot make. |
 
