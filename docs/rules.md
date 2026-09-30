@@ -5,13 +5,14 @@ Generated from the ruleset by node scripts/rules-doc.mjs. Do not edit by hand.
 - Ruleset version: **2026-09-30**
 - Mirrors: https://claude.com/docs/plugins/pre-submission-checklist (read 2026-09-30)
 - Also drawn from: https://claude.com/docs/plugins/submit, https://code.claude.com/docs/en/plugins/manifest-reference, https://code.claude.com/docs/en/hooks
-- Rules: 81, plus 10 decisions listed as out of reach
+- Rules: 82, plus 10 decisions listed as out of reach
 
 Each rule below carries the result class the directory would give the same problem, the
 title the portal uses in its report where the documentation gives one, and where the rule
 comes from. Only the first source is the directory's own checklist; a rule from any
-other source is this checker's reading of the documentation, and the directory does not
-check it in those words. Edit the rule in `scripts/rules/`, not this file.
+other source is this checker's reading of the documentation, of the directory's
+validator output, or its own advice, and the directory does not check it in those words.
+Edit the rule in `scripts/rules/`, not this file.
 
 ## Result classes
 
@@ -30,6 +31,7 @@ check it in those words. Edit the rule in `scripts/rules/`, not this file.
 | directory checklist | a row of the pre-submission checklist | 57 |
 | claude plugin validate | the plugin fails to load; the command reports it as an error | 4 |
 | manifest reference | a rule of the manifest reference, not of the checklist | 3 |
+| directory validator | a finding the directory's validator reports, observed in its output, that the checklist tables do not list | 1 |
 | this tool | advice from this checker; the directory does not check it | 17 |
 
 ## Repository and folder layout
@@ -81,6 +83,7 @@ check it in those words. Edit the rule in `scripts/rules/`, not this file.
 | manifest/component-path-outside | Blocks | — | A component path points outside the plugin folder. | Keep every file the plugin loads inside the plugin folder and write the path relative to it. | directory checklist |
 | manifest/author-shape | Warning | — | author is not an object with a name. | Write "author": { "name": "Your name or team" }. | manifest reference |
 | manifest/missing-metadata | Warning | — | The manifest leaves out description, author or version. | Set all three; the directory shows the description in your listing and uses the version to detect releases. | directory checklist |
+| manifest/icon-missing | Warning | — | The plugin has no icon: there is no .claude-plugin/icon.svg and plugin.json sets no icon. | Add .claude-plugin/icon.svg (square, at least 128 px) or set icon in plugin.json; without it the publisher's avatar is used. | directory validator |
 
 ## README and license
 

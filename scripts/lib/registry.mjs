@@ -51,6 +51,8 @@ export const BLOCKING_RESULTS = new Set(['stop', 'block']);
 /**
  * Where a rule comes from. Only the first is the directory's own checklist; the others are
  * real problems that the checklist does not list, and saying so is the honest thing to do.
+ * `validator` marks what the directory's validator is seen to report without the checklist
+ * documenting it.
  */
 export const SOURCES = {
   checklist: {
@@ -67,6 +69,11 @@ export const SOURCES = {
     label: 'manifest reference',
     url: 'https://code.claude.com/docs/en/plugins/manifest-reference',
     blurb: 'a rule of the manifest reference, not of the checklist',
+  },
+  validator: {
+    label: 'directory validator',
+    url: 'https://claude.com/docs/plugins/pre-submission-checklist#read-a-validation-result',
+    blurb: 'a finding the directory\'s validator reports, observed in its output, that the checklist tables do not list',
   },
   tool: {
     label: 'this tool',

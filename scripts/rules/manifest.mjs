@@ -9,6 +9,7 @@ import { defineRule } from '../lib/registry.mjs';
 import { hasNonAscii, nameHazards, oneLine } from '../lib/util.mjs';
 
 const MANIFEST_REL = '.claude-plugin/plugin.json';
+const ICON_REL = '.claude-plugin/icon.svg';
 
 /** Names the directory refuses outright. */
 const RESERVED_NAMES = new Set(['claude', 'anthropic', 'official', 'plugin', 'mcp', 'test']);
@@ -489,6 +490,27 @@ export const manifestRules = [
       const missing = ['description', 'author', 'version'].filter((key) => data[key] === undefined || data[key] === '');
       if (missing.length === 0) return [];
       return [{ path: MANIFEST_REL, detail: `Missing: ${missing.join(', ')}.` }];
+    },
+  }),
+
+  // Not in the checklist: the directory's validator reports a missing icon as a warning.
+  defineRule({
+    id: 'manifest/icon-missing',
+    section: 'manifest',
+    source: 'validator',
+    result: 'warning',
+    what: 'The plugin has no icon: there is no .claude-plugin/icon.svg and plugin.json sets no icon.',
+    fix: 'Add .claude-plugin/icon.svg (square, at least 128 px) or set icon in plugin.json; without it the publisher\'s avatar is used.',
+    limit: 1,
+    when: (scan) => !isSkillsOnly(scan) && !scan.noCommittedPluginFiles,
+    run(scan) {
+      const { data, error } = readManifest(scan);
+      // Without a readable manifest there is nothing to set an icon in, and the manifest rules
+      // already say what is wrong.
+      if (error || !data) return [];
+      if (scan.fileInPlugin(ICON_REL)) return [];
+      if (typeof data.icon === 'string' && data.icon.trim() !== '') return [];
+      return [{ path: ICON_REL, detail: 'No .claude-plugin/icon.svg, and plugin.json has no icon.' }];
     },
   }),
 ];

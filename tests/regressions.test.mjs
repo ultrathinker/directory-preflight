@@ -417,7 +417,7 @@ test('every rule says where it comes from', () => {
   const sources = new Set(json.findings.map((finding) => finding.source));
   assert.equal(sources.has('checklist'), true);
   for (const finding of json.findings) {
-    assert.equal(['checklist', 'validate', 'manifest-reference', 'tool'].includes(finding.source), true, finding.rule);
+    assert.equal(['checklist', 'validate', 'manifest-reference', 'validator', 'tool'].includes(finding.source), true, finding.rule);
     assert.equal(typeof finding.sourceLabel, 'string');
   }
 });
