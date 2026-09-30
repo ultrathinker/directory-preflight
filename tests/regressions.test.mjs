@@ -491,6 +491,8 @@ test('the plugin passes its own check on the committed tree', () => {
   const { json, status } = runChecker([projectRoot, '--json', '--no-judgment']);
   assert.equal(json.summary.byResult.stop, 0, JSON.stringify(json.findings, null, 2));
   assert.equal(json.summary.byResult.block, 0, JSON.stringify(json.findings, null, 2));
+  assert.equal(json.summary.byResult.hold, 0, JSON.stringify(json.findings, null, 2));
+  assert.equal(json.summary.byResult.warning, 0, JSON.stringify(json.findings, null, 2));
   assert.equal(status, 0);
 });
 

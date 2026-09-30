@@ -139,6 +139,7 @@ function checkFixtureText(name) {
   const dir = fixtureDir(name);
   return runChecker([dir, '--repo', dir, '--worktree']);
 }
+
 // ------------------------------------------------------------------------- thresholds
 
 function writeThreeDataFiles(name) {

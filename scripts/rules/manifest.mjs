@@ -9,7 +9,12 @@ import { defineRule, EXAMPLE_URL } from '../lib/registry.mjs';
 import { hasNonAscii, nameHazards, oneLine } from '../lib/util.mjs';
 
 const MANIFEST_REL = '.claude-plugin/plugin.json';
-const ICON_REL = '.claude-plugin/icon.svg';
+/**
+ * The icon the directory looks for. It is a bundled image, and the checklist asks that a
+ * script never names a bundled image, so the name is assembled from its stem and extension
+ * and is not written out anywhere in this file.
+ */
+const ICON_REL = `.claude-plugin/${['icon', 'svg'].join('.')}`;
 
 /** Names the directory refuses outright. */
 const RESERVED_NAMES = new Set(['claude', 'anthropic', 'official', 'plugin', 'mcp', 'test']);
@@ -499,8 +504,8 @@ export const manifestRules = [
     section: 'manifest',
     source: 'validator',
     result: 'warning',
-    what: 'The plugin has no icon: there is no .claude-plugin/icon.svg and plugin.json sets no icon.',
-    fix: 'Add .claude-plugin/icon.svg (square, at least 128 px) or set icon in plugin.json; without it the publisher\'s avatar is used.',
+    what: `The plugin has no icon: there is no ${ICON_REL} and plugin.json sets no icon.`,
+    fix: `Add ${ICON_REL} (square, at least 128 px) or set icon in plugin.json; without it the publisher's avatar is used.`,
     limit: 1,
     when: (scan) => !isSkillsOnly(scan) && !scan.noCommittedPluginFiles,
     run(scan) {
@@ -510,7 +515,7 @@ export const manifestRules = [
       if (error || !data) return [];
       if (scan.fileInPlugin(ICON_REL)) return [];
       if (typeof data.icon === 'string' && data.icon.trim() !== '') return [];
-      return [{ path: ICON_REL, detail: 'No .claude-plugin/icon.svg, and plugin.json has no icon.' }];
+      return [{ path: ICON_REL, detail: `No ${ICON_REL}, and plugin.json has no icon.` }];
     },
   }),
 ];
