@@ -1,3 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
-  <rect width="256" height="256" rx="48" fill="#0f4c5c"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="directory-preflight">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3730A3"/>
+      <stop offset="1" stop-color="#0E9F9A"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="56" fill="url(#bg)"/>
+  <rect x="62" y="56" width="132" height="158" rx="18" fill="#FFFFFF"/>
+  <rect x="98" y="40" width="60" height="34" rx="12" fill="#0F172A"/>
+  <rect x="112" y="50" width="32" height="10" rx="5" fill="#FFFFFF"/>
+  <g fill="none" stroke="#16A34A" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M80 110 l9 9 l17 -19"/>
+    <path d="M80 150 l9 9 l17 -19"/>
+    <path d="M80 190 l9 9 l17 -19"/>
+  </g>
+  <g fill="#CBD5E1">
+    <rect x="122" y="104" width="56" height="13" rx="6.5"/>
+    <rect x="122" y="144" width="42" height="13" rx="6.5"/>
+    <rect x="122" y="184" width="50" height="13" rx="6.5"/>
+  </g>
 </svg>
