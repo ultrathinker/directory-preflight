@@ -1,0 +1,19 @@
+{
+  "name": "directory-preflight",
+  "displayName": "Directory Preflight",
+  "version": "0.1.0",
+  "description": "Check a Claude Code plugin against the rules of the plugin directory's pre-submission checklist, with each finding under the result the checklist gives that shape.",
+  "author": {
+    "name": "ultrathinker"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ultrathinker/directory-preflight",
+  "homepage": "https://github.com/ultrathinker/directory-preflight",
+  "keywords": [
+    "plugin-directory",
+    "validation",
+    "pre-submission",
+    "lint",
+    "submission-readiness"
+  ]
+}

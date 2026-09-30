@@ -1,0 +1,14 @@
+{
+  "name": "directory-preflight",
+  "owner": {
+    "name": "ultrathinker"
+  },
+  "description": "Tools for getting a Claude Code plugin through the plugin directory.",
+  "plugins": [
+    {
+      "name": "directory-preflight",
+      "source": ".",
+      "description": "Check a plugin folder against the directory's pre-submission checklist before you submit it."
+    }
+  ]
+}
